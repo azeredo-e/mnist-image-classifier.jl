@@ -1,0 +1,7 @@
+name = "image_classifier"
+uuid = "ba75f302-877d-4d99-a849-21b892620c2e"
+authors = ["azeredo-e <eduardo.aeredo99@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
