@@ -1,0 +1,5 @@
+*.zip
+Manifest.toml
+/data/testing/
+/data/training/
+
