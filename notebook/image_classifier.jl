@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.43
+# v0.19.45
 
 using Markdown
 using InteractiveUtils
@@ -24,6 +24,41 @@ md"""
 # ╔═╡ 088da48d-242b-4736-abf8-09f40015da93
 md"""
 Import the data processing functions
+
+A prerequesite for this is to have the kaggle API installed and configured.
+"""
+
+# ╔═╡ bd9e104c-30c7-4a7b-8923-3bbd63e520fb
+# ╠═╡ disabled = true
+#=╠═╡
+run(`bash -c "
+cd ../data
+kaggle datasets download jidhumohan/mnist-png
+unzip mnist-png.zip
+"`)
+  ╠═╡ =#
+
+# ╔═╡ c79436ba-73d5-4292-bfc5-92ce06632dcc
+md"""
+For some reasaon the unzip command creates two copies of the files, so this deletes the extra and move the others to the root data folder.
+"""
+
+# ╔═╡ 7029e67d-779d-48a2-b1b7-1c7eae9a03ce
+# ╠═╡ disabled = true
+#=╠═╡
+run(`bash -c "
+cd ../data/mnist_png/
+rm -rf mnist_png/
+mv testing ../testing
+mv training ../training
+"`)
+  ╠═╡ =#
+
+# ╔═╡ 588a1c0e-ceae-4449-8bcd-46db6e2ea1c5
+md"""
+---
+
+### Processing the dataset into training and testing data
 """
 
 # ╔═╡ 9f1536dc-5263-41f2-a491-527937f5629e
@@ -35,7 +70,23 @@ This part loads all the images into memory and process them, so it takes quite a
 X_train, y_train = create_dataset("../data/training")
 
 # ╔═╡ a4f3b3f0-150f-48c5-a170-185f259fd0d0
+X_test, y_test = create_dataset("../data/testing")
 
+# ╔═╡ f799685c-210e-49ee-afa6-abe85ad4928a
+md"""
+## Creating the model
+"""
+
+# ╔═╡ b6d258ea-ba90-4a4a-ae17-52a24db0c995
+model = Chain(
+	Flux.flatten, # Transforms the matrix into an array
+	Dense(784=>15, relu),
+	Dense(15=>10, sigmoid),
+	softmax # Study later
+)
+
+# ╔═╡ a6f2a5af-4f39-4b45-a32a-c2b5ad6824ad
+model()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -52,7 +103,7 @@ Images = "~0.26.1"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.4"
+julia_version = "1.10.4"
 manifest_format = "2.0"
 project_hash = "93a4f75cdbdc575c849b66dc1f067adfd33c24ca"
 
@@ -261,7 +312,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.1.1+0"
 
 [[deps.CompositionsBase]]
 git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
@@ -809,8 +860,13 @@ uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
 version = "8.4.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
+deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.6.4+0"
 
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
@@ -906,7 +962,7 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.2+0"
+version = "2.28.2+1"
 
 [[deps.MetaGraphs]]
 deps = ["Graphs", "JLD2", "Random"]
@@ -937,7 +993,7 @@ version = "0.3.4"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.10.11"
+version = "2023.1.10"
 
 [[deps.NNlib]]
 deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Pkg", "Random", "Requires", "Statistics"]
@@ -1005,7 +1061,7 @@ version = "0.2.5"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+4"
+version = "0.3.23+4"
 
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
@@ -1028,7 +1084,7 @@ version = "2.4.0+0"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+0"
+version = "0.8.1+2"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
@@ -1068,7 +1124,7 @@ version = "0.12.3"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.10.0"
 
 [[deps.PkgVersion]]
 deps = ["Pkg"]
@@ -1148,7 +1204,7 @@ deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [[deps.Random]]
-deps = ["SHA", "Serialization"]
+deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RangeArrays]]
@@ -1274,6 +1330,7 @@ version = "1.2.1"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.10.0"
 
 [[deps.SparseInverseSubset]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -1339,7 +1396,7 @@ version = "1.4.3"
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-version = "1.9.0"
+version = "1.10.0"
 
 [[deps.StatsAPI]]
 deps = ["LinearAlgebra"]
@@ -1371,9 +1428,9 @@ deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
-deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "5.10.1+6"
+version = "7.2.1+1"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -1492,7 +1549,7 @@ version = "1.0.0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+0"
+version = "1.2.13+1"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1525,7 +1582,7 @@ version = "0.2.5"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.8.0+1"
 
 [[deps.libpng_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Zlib_jll"]
@@ -1553,7 +1610,7 @@ version = "2021.12.0+0"
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+0"
+version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
@@ -1561,9 +1618,16 @@ version = "17.4.0+0"
 # ╠═8191208e-47ba-11ef-2274-958cebd4f232
 # ╟─4a56a502-7fdd-49b0-8cdf-e018617d34c1
 # ╟─088da48d-242b-4736-abf8-09f40015da93
+# ╠═bd9e104c-30c7-4a7b-8923-3bbd63e520fb
+# ╟─c79436ba-73d5-4292-bfc5-92ce06632dcc
+# ╠═7029e67d-779d-48a2-b1b7-1c7eae9a03ce
+# ╟─588a1c0e-ceae-4449-8bcd-46db6e2ea1c5
 # ╠═5dee06c3-18ee-47cf-a18f-f32bbba0f2e9
 # ╟─9f1536dc-5263-41f2-a491-527937f5629e
 # ╠═0d08869f-714f-437d-9a32-1976f529a2e3
 # ╠═a4f3b3f0-150f-48c5-a170-185f259fd0d0
+# ╟─f799685c-210e-49ee-afa6-abe85ad4928a
+# ╠═b6d258ea-ba90-4a4a-ae17-52a24db0c995
+# ╠═a6f2a5af-4f39-4b45-a32a-c2b5ad6824ad
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
